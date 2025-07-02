@@ -3,485 +3,253 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Mail, Phone, MapPin, Shield, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Building2, Mail, Lock, ArrowRight } from "lucide-react";
 
-interface OrganizationFormData {
-  department_name: string;
-  legal_entity_name: string;
-  registration_number: string;
-  tax_id: string;
-  regulatory_authority: string;
-  organization_type: string;
-  industry_sector: string;
-  data_usage_summary: string;
-  data_retention_policy: string;
-  dpo_email: string;
-  contact_phone: string;
-  address_line1: string;
-  address_line2: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-  logo_url: string;
-  organization_name: string;
-  contact_email: string;
-  is_active: boolean;
+interface RegisterFormData {
+  email: string;
+  company_name: string;
+  password: string;
+  confirmPassword: string;
 }
 
 const Register = () => {
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<OrganizationFormData>({
-    department_name: "",
-    legal_entity_name: "",
-    registration_number: "",
-    tax_id: "",
-    regulatory_authority: "",
-    organization_type: "",
-    industry_sector: "",
-    data_usage_summary: "",
-    data_retention_policy: "",
-    dpo_email: "",
-    contact_phone: "",
-    address_line1: "",
-    address_line2: "",
-    city: "",
-    state: "",
-    postal_code: "",
-    country: "",
-    logo_url: "",
-    organization_name: "",
-    contact_email: "",
-    is_active: true,
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<RegisterFormData>({
+    email: "",
+    company_name: "",
+    password: "",
+    confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const updateFormData = (field: keyof OrganizationFormData, value: string | boolean) => {
+  const updateFormData = (field: keyof RegisterFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
+  const handleGoogleAuth = () => {
+    setIsLoading(true);
+    // Simulate Google OAuth process
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Google Authentication Successful!",
+        description: "Redirecting to organization setup...",
+      });
+      // Redirect to organization setup after successful Google auth
+      setTimeout(() => navigate("/organization-setup"), 1000);
+    }, 2000);
   };
 
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleEmailSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Organization registration data:", formData);
-    toast({
-      title: "Registration Successful!",
-      description: "Your organization has been registered successfully.",
-    });
-  };
-
-  const organizationTypes = [
-    "Private Limited",
-    "Public Limited",
-    "Partnership",
-    "Sole Proprietorship",
-    "Non-Profit",
-    "Government",
-    "Other"
-  ];
-
-  const industrySectors = [
-    "Technology",
-    "Healthcare",
-    "Finance",
-    "Education",
-    "Manufacturing",
-    "Retail",
-    "Consulting",
-    "Other"
-  ];
-
-  const renderStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Building2 className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold">Organization Information</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="organization_name">Organization Name *</Label>
-                <Input
-                  id="organization_name"
-                  value={formData.organization_name}
-                  onChange={(e) => updateFormData("organization_name", e.target.value)}
-                  placeholder="Enter organization name"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="legal_entity_name">Legal Entity Name *</Label>
-                <Input
-                  id="legal_entity_name"
-                  value={formData.legal_entity_name}
-                  onChange={(e) => updateFormData("legal_entity_name", e.target.value)}
-                  placeholder="Enter legal entity name"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="department_name">Department Name</Label>
-                <Input
-                  id="department_name"
-                  value={formData.department_name}
-                  onChange={(e) => updateFormData("department_name", e.target.value)}
-                  placeholder="e.g., IT Department"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="organization_type">Organization Type *</Label>
-                <Select onValueChange={(value) => updateFormData("organization_type", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select organization type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {organizationTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="industry_sector">Industry Sector *</Label>
-                <Select onValueChange={(value) => updateFormData("industry_sector", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select industry sector" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {industrySectors.map((sector) => (
-                      <SelectItem key={sector} value={sector}>
-                        {sector}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="logo_url">Logo URL</Label>
-                <Input
-                  id="logo_url"
-                  value={formData.logo_url}
-                  onChange={(e) => updateFormData("logo_url", e.target.value)}
-                  placeholder="https://example.com/logo.png"
-                  type="url"
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <FileText className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold">Legal & Compliance Details</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="registration_number">Registration Number *</Label>
-                <Input
-                  id="registration_number"
-                  value={formData.registration_number}
-                  onChange={(e) => updateFormData("registration_number", e.target.value)}
-                  placeholder="Enter registration number"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="tax_id">Tax ID *</Label>
-                <Input
-                  id="tax_id"
-                  value={formData.tax_id}
-                  onChange={(e) => updateFormData("tax_id", e.target.value)}
-                  placeholder="Enter tax identification number"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="regulatory_authority">Regulatory Authority</Label>
-                <Input
-                  id="regulatory_authority"
-                  value={formData.regulatory_authority}
-                  onChange={(e) => updateFormData("regulatory_authority", e.target.value)}
-                  placeholder="e.g., Data Protection Authority"
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Shield className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold">Data Protection & Privacy</h3>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="data_usage_summary">Data Usage Summary *</Label>
-                <Textarea
-                  id="data_usage_summary"
-                  value={formData.data_usage_summary}
-                  onChange={(e) => updateFormData("data_usage_summary", e.target.value)}
-                  placeholder="Describe how your organization processes and uses data"
-                  className="min-h-[100px]"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="data_retention_policy">Data Retention Policy *</Label>
-                <Textarea
-                  id="data_retention_policy"
-                  value={formData.data_retention_policy}
-                  onChange={(e) => updateFormData("data_retention_policy", e.target.value)}
-                  placeholder="Describe your data retention policy and timeframes"
-                  className="min-h-[100px]"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="dpo_email">Data Protection Officer Email</Label>
-                <Input
-                  id="dpo_email"
-                  type="email"
-                  value={formData.dpo_email}
-                  onChange={(e) => updateFormData("dpo_email", e.target.value)}
-                  placeholder="dpo@example.com"
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
-              <MapPin className="h-6 w-6 text-primary" />
-              <h3 className="text-lg font-semibold">Contact Information</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="contact_email">Contact Email *</Label>
-                <Input
-                  id="contact_email"
-                  type="email"
-                  value={formData.contact_email}
-                  onChange={(e) => updateFormData("contact_email", e.target.value)}
-                  placeholder="contact@example.com"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="contact_phone">Contact Phone *</Label>
-                <Input
-                  id="contact_phone"
-                  type="tel"
-                  value={formData.contact_phone}
-                  onChange={(e) => updateFormData("contact_phone", e.target.value)}
-                  placeholder="+1234567890"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="address_line1">Address Line 1 *</Label>
-                <Input
-                  id="address_line1"
-                  value={formData.address_line1}
-                  onChange={(e) => updateFormData("address_line1", e.target.value)}
-                  placeholder="123 Main Street"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="address_line2">Address Line 2</Label>
-                <Input
-                  id="address_line2"
-                  value={formData.address_line2}
-                  onChange={(e) => updateFormData("address_line2", e.target.value)}
-                  placeholder="Suite 100"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => updateFormData("city", e.target.value)}
-                  placeholder="New York"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="state">State/Province *</Label>
-                <Input
-                  id="state"
-                  value={formData.state}
-                  onChange={(e) => updateFormData("state", e.target.value)}
-                  placeholder="NY"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="postal_code">Postal Code *</Label>
-                <Input
-                  id="postal_code"
-                  value={formData.postal_code}
-                  onChange={(e) => updateFormData("postal_code", e.target.value)}
-                  placeholder="10001"
-                  required
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="country">Country *</Label>
-                <Input
-                  id="country"
-                  value={formData.country}
-                  onChange={(e) => updateFormData("country", e.target.value)}
-                  placeholder="United States"
-                  required
-                />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2 pt-4">
-              <Checkbox
-                id="is_active"
-                checked={formData.is_active}
-                onCheckedChange={(checked) => updateFormData("is_active", !!checked)}
-              />
-              <Label htmlFor="is_active" className="text-sm">
-                Set organization as active immediately upon registration
-              </Label>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
+    
+    // Basic validation
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    if (formData.password.length < 8) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulate registration process
+    setTimeout(() => {
+      setIsLoading(false);
+      console.log("Registration data:", {
+        email: formData.email,
+        company_name: formData.company_name,
+        // password would be hashed in real implementation
+      });
+      
+      toast({
+        title: "Registration Successful!",
+        description: "Account created. Redirecting to organization setup...",
+      });
+      
+      // Redirect to organization setup after successful registration
+      setTimeout(() => navigate("/organization-setup"), 1000);
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Organization Registration</h1>
+          <Building2 className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-foreground mb-2">Create Account</h1>
           <p className="text-muted-foreground">
-            Complete the registration process to get started with your organization
+            Sign up to register your organization
           </p>
         </div>
 
-        {/* Progress Indicator */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className="flex items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-[var(--transition-smooth)] ${
-                    step <= currentStep
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {step}
-                </div>
-                {step < 4 && (
-                  <div
-                    className={`w-12 h-0.5 mx-2 transition-[var(--transition-smooth)] ${
-                      step < currentStep ? "bg-primary" : "bg-border"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         <Card className="shadow-[var(--shadow-form)]">
-          <CardHeader>
-            <CardTitle>Step {currentStep} of 4</CardTitle>
-            <CardDescription>
-              {currentStep === 1 && "Basic organization details"}
-              {currentStep === 2 && "Legal and compliance information"}
-              {currentStep === 3 && "Data protection policies"}
-              {currentStep === 4 && "Contact and address information"}
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">Register</CardTitle>
+            <CardDescription className="text-center">
+              Create your account to get started
             </CardDescription>
           </CardHeader>
           
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {renderStep()}
-              
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                >
-                  Previous
-                </Button>
-                
-                {currentStep < 4 ? (
-                  <Button
-                    type="button"
-                    variant="professional"
-                    onClick={handleNext}
-                  >
-                    Next Step
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    variant="professional"
-                  >
-                    Complete Registration
-                  </Button>
-                )}
+          <CardContent className="space-y-6">
+            {/* Google OAuth Button */}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full py-6 text-base"
+              onClick={handleGoogleAuth}
+              disabled={isLoading}
+            >
+              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="currentColor"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              {isLoading ? "Signing up..." : "Continue with Google"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
               </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+              </div>
+            </div>
+
+            {/* Email Registration Form */}
+            <form onSubmit={handleEmailSignup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address *</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={(e) => updateFormData("email", e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="company_name">Company Name *</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="company_name"
+                    type="text"
+                    placeholder="Enter your company name"
+                    value={formData.company_name}
+                    onChange={(e) => updateFormData("company_name", e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password *</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={(e) => updateFormData("password", e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={8}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 8 characters long
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => updateFormData("confirmPassword", e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={8}
+                  />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                variant="professional"
+                className="w-full py-6 text-base"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  "Creating Account..."
+                ) : (
+                  <>
+                    Create Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
             </form>
+
+            <p className="text-center text-sm text-muted-foreground">
+              By creating an account, you agree to our{" "}
+              <a href="#" className="underline underline-offset-4 hover:text-primary">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" className="underline underline-offset-4 hover:text-primary">
+                Privacy Policy
+              </a>
+            </p>
+
+            <p className="text-center text-sm">
+              Already have an account?{" "}
+              <a href="#" className="text-primary underline underline-offset-4 hover:text-primary/80">
+                Sign in
+              </a>
+            </p>
           </CardContent>
         </Card>
       </div>
