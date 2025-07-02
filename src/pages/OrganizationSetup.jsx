@@ -9,34 +9,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Building2, Mail, Phone, MapPin, Shield, FileText } from "lucide-react";
 
-interface OrganizationFormData {
-  department_name: string;
-  legal_entity_name: string;
-  registration_number: string;
-  tax_id: string;
-  regulatory_authority: string;
-  organization_type: string;
-  industry_sector: string;
-  data_usage_summary: string;
-  data_retention_policy: string;
-  dpo_email: string;
-  contact_phone: string;
-  address_line1: string;
-  address_line2: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-  logo_url: string;
-  organization_name: string;
-  contact_email: string;
-  is_active: boolean;
-}
-
 const OrganizationSetup = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<OrganizationFormData>({
+  const [formData, setFormData] = useState({
     department_name: "",
     legal_entity_name: "",
     registration_number: "",
@@ -60,7 +36,7 @@ const OrganizationSetup = () => {
     is_active: true,
   });
 
-  const updateFormData = (field: keyof OrganizationFormData, value: string | boolean) => {
+  const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -76,7 +52,7 @@ const OrganizationSetup = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Organization setup data:", formData);
     toast({

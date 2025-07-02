@@ -8,17 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Building2, Mail, Lock, ArrowRight } from "lucide-react";
 
-interface RegisterFormData {
-  email: string;
-  company_name: string;
-  password: string;
-  confirmPassword: string;
-}
-
 const Register = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<RegisterFormData>({
+  const [formData, setFormData] = useState({
     email: "",
     company_name: "",
     password: "",
@@ -26,7 +19,7 @@ const Register = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const updateFormData = (field: keyof RegisterFormData, value: string) => {
+  const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -44,7 +37,7 @@ const Register = () => {
     }, 2000);
   };
 
-  const handleEmailSignup = (e: React.FormEvent) => {
+  const handleEmailSignup = (e) => {
     e.preventDefault();
     
     // Basic validation
